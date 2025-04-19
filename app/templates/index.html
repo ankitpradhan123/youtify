@@ -1,0 +1,1372 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video To Blog and Linkedin Post AI Converter</title>
+  <style>
+    /* Basic styling */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      background-color: #f9f9fb;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(to right, #8b5cf6, #6d28d9);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      margin: 0 0 15px 0;
+      font-size: 2.5rem;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .logo-icons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input[type="text"], input[type="url"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #7c3aed;
+    }
+
+    button:disabled {
+      background-color: #d1d5db;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #8b5cf6;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .content-section {
+      display: none; /* Hidden by default */
+      margin-top: 40px;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      border-bottom: 2px solid #8b5cf6;
+      font-weight: 600;
+      color: #8b5cf6;
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* LinkedIn preview styling */
+    .linkedin-preview {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .profile-pic {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+
+    .profile-info h4 {
+      margin: 0 0 4px 0;
+    }
+
+    .profile-info p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .post-content {
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 12px;
+    }
+
+    .action-button {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* Blog post styling */
+    .blog-post {
+      line-height: 1.8;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .blog-post h1, .blog-post h2, .blog-post h3 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .copy-button {
+      display: block;
+      margin: 20px 0;
+      background-color: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .copy-button:hover {
+      background-color: #e5e7eb;
+    }
+
+    .error-message {
+      color: #ef4444;
+      background-color: #fee2e2;
+      border: 1px solid #fecaca;
+      padding: 12px;
+      border-radius: 4px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    /* Scrollbar styling */
+    .blog-post::-webkit-scrollbar,
+    .linkedin-preview::-webkit-scrollbar,
+    .tab-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .blog-post::-webkit-scrollbar-track,
+    .linkedin-preview::-webkit-scrollbar-track,
+    .tab-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    .blog-post::-webkit-scrollbar-thumb,
+    .linkedin-preview::-webkit-scrollbar-thumb,
+    .tab-content::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 8px;
+    }
+
+    .blog-post::-webkit-scrollbar-thumb:hover,
+    .linkedin-preview::-webkit-scrollbar-thumb:hover,
+    .tab-content::-webkit-scrollbar-thumb:hover {
+      background: #a1a1aa;
+    }
+
+    /* Feature section styling */
+    .features-section {
+      padding: 60px 20px;
+      background: linear-gradient(to bottom, #ffffff, #f5f5fa);
+      text-align: center;
+    }
+
+    .features-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .features-description {
+      max-width: 800px;
+      margin: 0 auto 3rem auto;
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 640px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: 1px solid #eaeaea;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border-color: #8b5cf6;
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background-color: #f5f3ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .feature-description {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .footer-links {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      color: #6d28d9;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* SEO section styling */
+    .seo-section {
+      padding: 60px 20px;
+      background: linear-gradient(to top, #ffffff, #f3f4ff);
+      margin-top: 40px;
+    }
+
+    .seo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .seo-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .seo-header h2 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .seo-header p {
+      max-width: 800px;
+      margin: 0 auto;
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .seo-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    @media (min-width: 768px) {
+      .seo-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .seo-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .seo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .seo-card-image {
+      height: 200px;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .seo-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .seo-card:hover .seo-card-image img {
+      transform: scale(1.05);
+    }
+
+    .seo-card-body {
+      padding: 25px;
+    }
+
+    .seo-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .seo-card p {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .seo-benefits {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+
+    .seo-benefits li {
+      padding-left: 30px;
+      margin-bottom: 12px;
+      position: relative;
+      color: #555;
+    }
+
+    .seo-benefits li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #8b5cf6;
+      font-weight: bold;
+    }
+
+    .seo-cta {
+      display: inline-block;
+      background-color: #8b5cf6;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+
+    .seo-cta:hover {
+      background-color: #7c3aed;
+    }
+
+    /* FAQ Section Styles */
+    .faq-section {
+      padding: 60px 20px;
+      background-color: #f5f5fa;
+    }
+
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .faq-header h2 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .faq-header p {
+      max-width: 600px;
+      margin: 0 auto;
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .faq-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .faq-item {
+      margin-bottom: 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: white;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 20px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #333;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      background-color: #f9f9f9;
+    }
+
+    .faq-answer {
+      padding: 0 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .faq-answer p {
+      margin-top: 0;
+      padding-bottom: 20px;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 0 20px 20px 20px;
+    }
+
+    .faq-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Blog Article Section Styles */
+    .blog-article-section {
+      padding: 60px 20px;
+      background: linear-gradient(to bottom, #f9f9fb, #f3f4ff);
+      margin-top: 40px;
+    }
+
+    .blog-article-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .blog-article-header {
+      text-align: center;
+      padding: 30px 20px;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    .blog-article-header h2 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .blog-article-header p {
+      color: #666;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .blog-article-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .blog-article-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .blog-article-content {
+      padding: 30px 40px;
+      line-height: 1.8;
+    }
+
+    .blog-article-content h3 {
+      font-size: 1.5rem;
+      color: #333;
+      margin: 30px 0 15px;
+    }
+
+    .blog-article-content p {
+      margin: 0 0 20px;
+      color: #444;
+    }
+
+    .blog-article-content ul, .blog-article-content ol {
+      margin: 0 0 20px 20px;
+    }
+
+    .blog-article-content li {
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    .blog-article-content blockquote {
+      border-left: 4px solid #8b5cf6;
+      padding: 15px 20px;
+      margin: 0 0 20px;
+      background-color: #f9f9fb;
+      color: #555;
+      font-style: italic;
+    }
+
+    .blog-article-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    .blog-article-author {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 20px 40px;
+      border-top: 1px solid #eaeaea;
+      background-color: #f9f9fb;
+    }
+
+    .blog-article-author-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .blog-article-author-info h4 {
+      margin: 0 0 5px;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .blog-article-author-info p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Video To Blog and Linkedin Post AI Converter</h1>
+    <p>Transform YouTube videos into polished blog posts and LinkedIn content in seconds</p>
+  </header>
+
+  <div class="container">
+    <div class="form-container">
+      <div class="input-group">
+          {% csrf_token %}
+        <label for="youtubeUrl">YouTube Video URL</label>
+        <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+
+      <button id="generateButton">Generate Content</button>
+      <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <div id="loadingIndicator" class="loading">
+      <div class="spinner"></div>
+      <p>Generating content from video...</p>
+      <p>This may take a minute or two</p>
+    </div>
+
+    <div id="contentSection" class="content-section">
+      <div class="tabs">
+        <div class="tab active" data-tab="blog">Blog Post</div>
+        <div class="tab" data-tab="linkedin">LinkedIn Post</div>
+      </div>
+
+      <div id="blogContent" class="tab-content active">
+        <div class="blog-post" id="blogPostContent"></div>
+        <button class="copy-button" id="copyBlogButton">Copy to clipboard</button>
+        <button class="copy-button" id="copyBlogHtmlButton">Copy as HTML</button>
+      </div>
+
+      <div id="linkedinContent" class="tab-content">
+        <div class="linkedin-preview">
+          <div class="profile-section">
+            <img src="https://i.pravatar.cc/150?img=5" alt="Profile picture" class="profile-pic">
+            <div class="profile-info">
+              <h4>Maria Jones</h4>
+              <p>Software Engineer at ExampleCorp</p>
+              <p style="font-size: 12px;">Just now • 🌎</p>
+            </div>
+          </div>
+          <div class="post-content" id="linkedinPostContent"></div>
+          <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <span>👍</span>
+            <span>❤️</span>
+            <span>🎉</span>
+            <span style="font-size: 12px; margin-left: 5px;">0 reactions</span>
+          </div>
+          <div class="post-actions">
+            <button class="action-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path></svg>
+              Like
+            </button>
+            <button class="action-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              Comment
+            </button>
+            <button class="action-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>
+              Repost
+            </button>
+            <button class="action-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path></svg>
+              Send
+            </button>
+          </div>
+        </div>
+        <button class="copy-button" id="copyLinkedinButton">Copy to clipboard</button>
+      </div>
+    </div>
+
+    <!-- Feature Cards Section -->
+    <div class="features-section">
+      <h2 class="features-title">How It Works</h2>
+      <p class="features-description">
+        Our tool uses advanced AI to transform YouTube videos into high-quality written content in seconds.
+        Save hours of manual transcription and formatting.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path><path d="m10 15 5-3-5-3z"></path></svg>
+          </div>
+          <h3 class="feature-title">Paste URL</h3>
+          <p class="feature-description">Simply paste your YouTube video link in the input field</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M12 12v.01"></path><path d="M14.5 12v.01"></path><path d="M9.5 12v.01"></path><path d="M7 7h10"></path></svg>
+          </div>
+          <h3 class="feature-title">AI Processing</h3>
+          <p class="feature-description">Our AI analyzes the video content and structures it properly</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </div>
+          <h3 class="feature-title">Get Content</h3>
+          <p class="feature-description">Receive well-formatted blog and LinkedIn content instantly</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <h3 class="feature-title">Save Time</h3>
+          <p class="feature-description">Save hours of manual transcription and content creation work</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO Content Section -->
+    <section class="seo-section">
+      <div class="seo-container">
+        <div class="seo-header">
+          <h2>Boost Your Online Presence with SEO-Optimized Content</h2>
+          <p>Learn how our AI-powered tool transforms YouTube videos into high-ranking blog posts and engaging LinkedIn content</p>
+        </div>
+
+        <div class="seo-grid">
+          <div class="seo-card">
+            <div class="seo-card-image">
+              <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="SEO blog post image">
+            </div>
+            <div class="seo-card-body">
+              <h3>SEO-Optimized Blog Posts</h3>
+              <p>Turn your YouTube content into search engine friendly blog posts that rank higher and drive more organic traffic to your website.</p>
+              <ul class="seo-benefits">
+                <li>Properly formatted headings with H1, H2, H3 structure</li>
+                <li>Keyword-rich content that search engines love</li>
+                <li>Optimized for readability and engagement</li>
+                <li>Complete with meta descriptions and title suggestions</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="seo-card">
+            <div class="seo-card-image">
+              <img src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="LinkedIn post image">
+            </div>
+            <div class="seo-card-body">
+              <h3>Engaging LinkedIn Posts</h3>
+              <p>Transform your video content into professional LinkedIn posts that drive engagement and establish your authority in your industry.</p>
+              <ul class="seo-benefits">
+                <li>Attention-grabbing openings with emojis</li>
+                <li>Properly formatted with line breaks for readability</li>
+                <li>Strategic hashtags to increase visibility</li>
+                <li>Calls-to-action that generate responses</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="blog-article-section">
+      <div class="blog-article-container">
+
+
+        <div class="blog-article-header">
+          <h2>Transforming Video Content into Blog Post and Linkedin Post[2025]</h2>
+          <p>How AI is revolutionizing content repurposing for creators and marketers</p>
+
+          <div class="blog-article-meta">
+            <div class="blog-article-meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+              <span>April 10, 2025</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="blog-article-content">
+          <p>In today's digital landscape, content is king. But creating high-quality content across multiple platforms can be time-consuming and resource-intensive. One of the most untapped opportunities for content creators and marketers is the wealth of information already present in their video content.</p>
+          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Video to blog content" class="blog-article-image">
+
+          <h3>The Video Content Goldmine</h3>
+          <p>YouTube videos contain valuable insights, expertise, and narratives that can be transformed into written content. However, manually transcribing and reformatting this content has traditionally been a tedious process requiring hours of work.</p>
+
+          <p>This is where AI-powered tools come in, revolutionizing how we approach content repurposing.</p>
+
+          <blockquote>
+            "The ability to transform a 30-minute video into a well-structured blog post and engaging LinkedIn content in seconds isn't just a convenience—it's a game-changer for content strategy."
+          </blockquote>
+
+          <h3>Why Repurpose Video to Written Content?</h3>
+
+          <p>There are several compelling reasons to transform your video content into written formats:</p>
+
+          <ul>
+            <li><strong>Expanded Reach:</strong> Not all your audience consumes video content. Some prefer reading blogs or scrolling through LinkedIn posts. By repurposing, you reach these audience segments.</li>
+            <li><strong>SEO Benefits:</strong> Search engines can't fully index video content, but they can index every word of your blog posts. This significantly improves your discoverability.</li>
+            <li><strong>Extended Content Lifespan:</strong> A single video can spawn multiple pieces of content—blog posts, social media snippets, LinkedIn articles—extending the lifespan and impact of your original content.</li>
+            <li><strong>Enhanced Learning:</strong> Different people learn in different ways. While some retain information better through visual and auditory means, others prefer reading at their own pace.</li>
+          </ul>
+
+          <h3>The AI Advantage in Content Repurposing</h3>
+
+          <p>Advanced AI technology has made the process of transforming video content into written formats faster, more accurate, and more sophisticated than ever before. Here's how:</p>
+
+          <ol>
+            <li><strong>Intelligent Content Analysis:</strong> AI doesn't just transcribe words—it understands context, identifies key points, and recognizes the overall structure of your content.</li>
+            <li><strong>Format-Specific Optimization:</strong> Whether it's a blog post that needs proper headings and paragraph structure or a LinkedIn post that requires engagement hooks and hashtags, AI tools can optimize content for specific platforms.</li>
+            <li><strong>Time Efficiency:</strong> What would take hours of manual work can now be accomplished in seconds, freeing up valuable time for content creators to focus on strategy and creativity.</li>
+          </ol>
+
+          <h3>Implementing Content Repurposing in Your Strategy</h3>
+
+          <p>To make the most of AI-powered content repurposing, consider these strategies:</p>
+
+          <ul>
+            <li>Start with your most popular videos—they've already proven their appeal to your audience</li>
+            <li>Create a consistent publishing schedule for repurposed content</li>
+            <li>Customize the AI-generated content to match your brand voice and add personal insights</li>
+            <li>Track the performance of repurposed content to identify which formats and topics resonate best with your audience</li>
+          </ul>
+
+          <p>As content demands continue to increase across multiple platforms, tools that help creators and marketers work smarter rather than harder will become essential components of successful content strategies. The ability to transform video content into well-crafted written pieces isn't just about efficiency—it's about maximizing the value and reach of every piece of content you create.</p>
+        </div>
+
+        <div class="blog-article-author">
+          <img src="{% static 'app/profile_image.jpeg' %}" alt="Author" class="blog-article-author-image">
+          <div class="blog-article-author-info">
+            <h4>Ankit Pradhan</h4>
+            <p>Software Developer and SEO specialist</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="faq-container">
+        <div class="faq-header">
+          <h2>Frequently Asked Questions</h2>
+          <p>Find answers to common questions about our YouTube to blog and linkedin post generator tool</p>
+        </div>
+
+        <ul class="faq-list">
+          <li class="faq-item">
+            <div class="faq-question">
+              <span>How does the Youtube links to blog and linkedin post work?</span>
+              <span class="faq-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+            <div class="faq-answer">
+              <p>Our tool uses advanced AI technology to extract and analyze the content from YouTube videos. It processes the video information, identifies key topics, main points, and relevant details, then generates well-structured blog posts and engaging LinkedIn content based on that analysis.</p>
+            </div>
+          </li>
+
+          <li class="faq-item">
+            <div class="faq-question">
+              <span>Is there a limit to how many videos I can convert?</span>
+              <span class="faq-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+            <div class="faq-answer">
+              <p>There are no strict limits on the number of videos you can convert. However, for optimal performance and to ensure fair usage for all users, we recommend spacing out multiple conversions. If you have high-volume needs, please contact us at ankit.03996@gmail.com for custom solutions.</p>
+            </div>
+          </li>
+
+          <li class="faq-item">
+            <div class="faq-question">
+              <span>What type of YouTube videos work best with this tool?</span>
+              <span class="faq-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+            <div class="faq-answer">
+              <p>Our tool works well with a variety of content, and only performs with the videos having transcript. Our tool extracts
+              the transcript data and converts it into a well structured and SEO friendly blog post and an engaging linkedin
+              post with emojis</p>
+            </div>
+          </li>
+
+          <li class="faq-item">
+            <div class="faq-question">
+              <span>Can I edit the generated content?</span>
+              <span class="faq-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+            <div class="faq-answer">
+              <p>Yes, absolutely! The generated content is fully editable. We provide the content in both plain text and HTML formats for blog posts, making it easy to copy and modify before publishing. We recommend reviewing and personalizing the content to match your brand voice and style.</p>
+            </div>
+          </li>
+
+          <li class="faq-item">
+            <div class="faq-question">
+              <span>What information do I need to provide?</span>
+              <span class="faq-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+            <div class="faq-answer">
+              <p>All you need to provide is the YouTube video URL. Simply paste the link into the input field, and our AI will handle the rest. For best results, ensure the video is publicly accessible and has proper transcript.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="{% url 'privacy-policy' %}">Privacy Policy</a>
+      <a href="{% url 'disclaimer' %}">Disclaimer</a>
+    </div>
+    <p>© 2025 Video To Blog and Linkedin Post AI converter. All rights reserved.</p>
+    <p>Developed by <a href="https://www.linkedin.com/in/ankit-pradhan-15a52712a/">Ankit Pradhan</a></p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM elements
+      const youtubeUrlInput = document.getElementById('youtubeUrl');
+      const generateButton = document.getElementById('generateButton');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const contentSection = document.getElementById('contentSection');
+      const errorMessage = document.getElementById('errorMessage');
+      const blogPostContent = document.getElementById('blogPostContent');
+      const linkedinPostContent = document.getElementById('linkedinPostContent');
+      const copyBlogButton = document.getElementById('copyBlogButton');
+      const copyLinkedinButton = document.getElementById('copyLinkedinButton');
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      // Tab switching
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const tabId = this.getAttribute('data-tab');
+
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+
+          // Add active class to current tab and content
+          this.classList.add('active');
+          document.getElementById(tabId + 'Content').classList.add('active');
+        });
+      });
+
+      // Updated copy content buttons with improved formatting preservation
+      copyBlogButton.addEventListener('click', function() {
+        const blogContent = blogPostContent.innerHTML;
+
+        // Create a properly formatted markdown version
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = blogContent;
+
+        let markdownText = '';
+
+        // Process the DOM structure to convert to markdown
+        tempDiv.querySelectorAll('*').forEach(node => {
+          const tagName = node.tagName.toLowerCase();
+          const content = node.textContent.trim();
+
+          if (!content) return;
+
+          if (tagName === 'h1') {
+            markdownText += '# ' + content + '\n\n';
+          } else if (tagName === 'h2') {
+            markdownText += '## ' + content + '\n\n';
+          } else if (tagName === 'h3') {
+            markdownText += '### ' + content + '\n\n';
+          } else if (tagName === 'p') {
+            if (node.parentNode.tagName.toLowerCase() !== 'li') {
+              markdownText += content + '\n\n';
+            }
+          } else if (tagName === 'ul') {
+            // Skip, will be handled by li elements
+          } else if (tagName === 'ol') {
+            // Skip, will be handled by li elements
+          } else if (tagName === 'li') {
+            const parent = node.parentNode.tagName.toLowerCase();
+            if (parent === 'ul') {
+              markdownText += '- ' + content + '\n';
+            } else if (parent === 'ol') {
+              const index = Array.from(node.parentNode.children).indexOf(node) + 1;
+              markdownText += index + '. ' + content + '\n';
+            }
+
+            if (node === node.parentNode.lastChild) {
+              markdownText += '\n';
+            }
+          }
+        });
+
+        // If the conversion didn't work well, fall back to the text content with some processing
+        if (!markdownText.trim()) {
+          markdownText = processBlogContentForCopy(tempDiv);
+        }
+
+        // Use the modern clipboard API for better formatting
+        navigator.clipboard.writeText(markdownText)
+          .then(() => {
+            this.textContent = 'Copied!';
+            setTimeout(() => { this.textContent = 'Copy to clipboard'; }, 2000);
+          })
+          .catch(err => {
+            console.error('Failed to copy: ', err);
+            this.textContent = 'Copy failed';
+            setTimeout(() => { this.textContent = 'Copy to clipboard'; }, 2000);
+          });
+      });
+
+      copyBlogHtmlButton.addEventListener('click', function() {
+        let htmlContent = blogPostContent.innerHTML;
+
+        htmlContent = cleanHtml(htmlContent);
+
+        navigator.clipboard.writeText(htmlContent)
+          .then(() => {
+            this.textContent = 'Copied as HTML!';
+            setTimeout(() => { this.textContent = 'Copy as HTML'; }, 2000);
+          })
+          .catch(err => {
+            console.error('Failed to copy HTML: ', err);
+            this.textContent = 'Copy failed';
+            setTimeout(() => { this.textContent = 'Copy as HTML'; }, 2000);
+          });
+      });
+
+      function cleanHtml(html) {
+        html = html.replace(/(\n\s*\n\s*\n)/g, '\n\n');
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        function formatHTML(node, level = 0) {
+          const indent = '  '.repeat(level);
+          let result = '';
+
+          if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent.trim();
+            if (text) {
+              result += indent + text + '\n';
+            }
+            return result;
+          }
+
+          if (node.nodeType !== Node.ELEMENT_NODE) {
+            return result;
+          }
+
+          const tagName = node.tagName.toLowerCase();
+
+          result += indent + '<' + tagName + '>\n';
+
+          Array.from(node.childNodes).forEach(child => {
+            result += formatHTML(child, level + 1);
+          });
+
+          result += indent + '</' + tagName + '>\n';
+
+          return result;
+        }
+
+        return html;
+      }
+
+      copyLinkedinButton.addEventListener('click', function() {
+        copyToClipboard(linkedinPostContent.textContent);
+        this.textContent = 'Copied!';
+        setTimeout(() => { this.textContent = 'Copy to clipboard'; }, 2000);
+      });
+
+      // Generate content when button is clicked
+      generateButton.addEventListener('click', function() {
+        const youtubeUrl = youtubeUrlInput.value.trim();
+
+        if (!youtubeUrl) {
+          showError('Please enter a YouTube URL');
+          return;
+        }
+
+        if (!isValidYoutubeUrl(youtubeUrl)) {
+          showError('Please enter a valid YouTube URL');
+          return;
+        }
+
+        // Start processing
+        showLoading();
+        hideError();
+
+        // Generate content
+        generateContent(youtubeUrl)
+          .then(response => {
+            if (response.error) {
+              showError(response.error);
+              hideLoading();
+              return;
+            }
+
+            // Update content
+            blogPostContent.innerHTML = formatBlogPost(response.blogPost || response.blog_post);
+            linkedinPostContent.textContent = response.linkedinPost || response.linkedin_post;
+
+            // Show content
+            hideLoading();
+            showContent();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showError('Failed to generate content. Please try again.');
+            hideLoading();
+          });
+      });
+
+      function getCSRFToken() {
+        return document.querySelector("[name=csrfmiddlewaretoken]").value;
+      }
+
+      // Helper functions
+      function generateContent(youtubeUrl) {
+         let csrfToken = getCSRFToken();
+        // Call Django backend
+
+        return fetch('', {  // Adjust this URL to match your Django URL configuration
+          method: 'POST',
+          body: JSON.stringify({ youtube_url: youtubeUrl }),
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken // Include the CSRF token in headers
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+          return {
+            blogPost: data.blog_post || "",
+            linkedinPost: data.linkedin_post || "",
+            error: data.error || ""
+          };
+        })
+        .catch(error => {
+          console.error("API call failed:", error);
+          // Use fallback content in development
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return getFallbackContent();
+          }
+          throw error;
+        });
+      }
+
+      function getFallbackContent() {
+        return {
+          blogPost: `# The Ultimate Guide to Web Development in 2023\n\nIn today's digital landscape, web development skills are more valuable than ever. This comprehensive guide explores the latest trends, tools, and techniques for modern web development.\n\n## Frontend Essentials\n\nThe frontend landscape continues to evolve with React, Vue, and Angular leading the way. JavaScript frameworks have revolutionized how we build interactive user interfaces.\n\n### The Rise of Tailwind CSS\n\nTailwind CSS has gained massive popularity due to its utility-first approach, allowing developers to create custom designs without leaving their HTML.\n\n## Backend Technologies\n\nOn the backend, we're seeing the rise of serverless architectures and microservices. Node.js remains popular, while Go and Rust are gaining traction for performance-critical applications.\n\n## Key Takeaways\n\n- Focus on learning fundamentals before frameworks\n- Understand how to optimize for performance\n- Stay updated with the evolving ecosystem\n- Practice building real projects to solidify knowledge`,
+
+          linkedinPost: `🚀 Just watched an incredible video on web development trends for 2023!\n\nKey insights I learned:\n\n✅ JavaScript frameworks like React, Vue, and Angular continue to dominate the frontend landscape\n\n✅ Tailwind CSS is changing how developers approach styling with its utility-first methodology\n\n✅ Serverless architectures are reducing the complexity of scaling applications\n\n✅ Performance optimization is becoming a critical differentiator for user experience\n\nAs someone passionate about creating exceptional digital experiences, I'm excited to apply these insights to my next project.\n\nWhat web development trends are you most excited about this year? Share your thoughts below! 👇\n\nYoutube link in the comment section 👀\n\n#WebDevelopment #TechTrends #JavaScript #Programming #WebDev`
+        };
+      }
+
+      function isValidYoutubeUrl(url) {
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+        return youtubeRegex.test(url);
+      }
+
+      function formatBlogPost(content) {
+        if (!content) return '';
+
+        // Convert markdown headings to HTML
+        content = content.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+        content = content.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+        content = content.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+
+        // Convert markdown lists to HTML
+        content = content.replace(/^\- (.*$)/gm, '<li>$1</li>');
+        content = content.replace(/<li>(.*)<\/li>/gm, function(match) {
+          return '<ul>' + match + '</ul>';
+        });
+
+        // Convert line breaks to paragraphs
+        const paragraphs = content.split('\n\n');
+        return paragraphs.map(p => {
+          if (p.trim().startsWith('<h') || p.trim().startsWith('<ul>')) {
+            return p;
+          }
+          return `<p>${p}</p>`;
+        }).join('');
+      }
+
+      function showLoading() {
+        loadingIndicator.style.display = 'block';
+        generateButton.disabled = true;
+      }
+
+      function hideLoading() {
+        loadingIndicator.style.display = 'none';
+        generateButton.disabled = false;
+      }
+
+      function showContent() {
+        contentSection.style.display = 'block';
+      }
+
+      function hideContent() {
+        contentSection.style.display = 'none';
+      }
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+      }
+
+      function hideError() {
+        errorMessage.style.display = 'none';
+      }
+
+      function copyToClipboard(text) {
+        // Handle HTML content
+        if (text.includes('<')) {
+          const temp = document.createElement('div');
+          temp.innerHTML = text;
+          text = temp.textContent;
+        }
+
+        // Create a temporary textarea element
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+
+        // Select and copy text
+        textarea.select();
+        document.execCommand('copy');
+
+        // Remove temporary element
+        document.body.removeChild(textarea);
+      }
+
+            // FAQ Toggle Functionality
+      const faqItems = document.querySelectorAll('.faq-item');
+
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+
+        question.addEventListener('click', () => {
+          // Close all other items first
+          faqItems.forEach(otherItem => {
+            if (otherItem !== item && otherItem.classList.contains('active')) {
+              otherItem.classList.remove('active');
+            }
+          });
+
+          // Toggle the clicked item
+          item.classList.toggle('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

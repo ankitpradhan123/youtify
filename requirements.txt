@@ -1,0 +1,5 @@
+Django
+langchain
+agno
+youtube_transcript_api
+groq
