@@ -1,0 +1,5 @@
+/venv
+.env
+/app/__pycache__/
+.idea/
+youtify/__pycache__/
