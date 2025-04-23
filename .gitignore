@@ -3,3 +3,4 @@
 /app/__pycache__/
 .idea/
 youtify/__pycache__/
+youtify/settings.py

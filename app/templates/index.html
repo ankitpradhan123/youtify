@@ -1244,6 +1244,7 @@
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken // Include the CSRF token in headers
             },
+          signal: AbortSignal.timeout(600000)
         })
         .then(response => response.json())
         .then(data => {
