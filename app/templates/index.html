@@ -708,6 +708,60 @@
       font-size: 0.9rem;
       color: #666;
     }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      background-color: #ccc;
+      border-radius: 34px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: .4s;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    .toggle-switch input:checked + .slider {
+      background-color: #8b5cf6;
+    }
+
+    .toggle-switch input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+
+    .custom-checkbox-label {
+      font-weight: 500;
+      font-size: 16px;
+      color: #333;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
   </style>
 </head>
 <body>
@@ -722,6 +776,14 @@
           {% csrf_token %}
         <label for="youtubeUrl">YouTube Video URL</label>
         <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+        <div class="input-group" style="margin-top: 10px;">
+            <label class="toggle-switch">
+                <input type="checkbox" id="generateLinkedinCheckbox">
+                <span class="slider"></span>
+            </label>
+            <label for="generateLinkedinCheckbox" class="custom-checkbox-label" style="margin-left: 10px;">Also generate a LinkedIn post</label>
+        </div>
+
       </div>
 
       <button id="generateButton">Generate Content</button>
@@ -1189,6 +1251,7 @@
       // Generate content when button is clicked
       generateButton.addEventListener('click', function() {
         const youtubeUrl = youtubeUrlInput.value.trim();
+        const generateLinkedin = document.getElementById('generateLinkedinCheckbox').checked;
 
         if (!youtubeUrl) {
           showError('Please enter a YouTube URL');
@@ -1205,7 +1268,7 @@
         hideError();
 
         // Generate content
-        generateContent(youtubeUrl)
+        generateContent(youtubeUrl, generateLinkedin)
           .then(response => {
             if (response.error) {
               showError(response.error);
@@ -1215,7 +1278,18 @@
 
             // Update content
             blogPostContent.innerHTML = formatBlogPost(response.blogPost || response.blog_post);
-            linkedinPostContent.textContent = response.linkedinPost || response.linkedin_post;
+            if (generateLinkedin) {
+                linkedinPostContent.textContent = response.linkedinPost || response.linkedin_post;
+                document.querySelector('[data-tab="linkedin"]').style.display = 'block';
+            } else {
+                document.querySelector('[data-tab="linkedin"]').style.display = 'none';
+            }
+
+            // Always show blog tab first
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="blog"]').classList.add('active');
+            document.getElementById('blogContent').classList.add('active');
 
             // Show content
             hideLoading();
@@ -1233,13 +1307,13 @@
       }
 
       // Helper functions
-      function generateContent(youtubeUrl) {
+      function generateContent(youtubeUrl, generateLinkedinPost) {
          let csrfToken = getCSRFToken();
         // Call Django backend
 
         return fetch('', {  // Adjust this URL to match your Django URL configuration
           method: 'POST',
-          body: JSON.stringify({ youtube_url: youtubeUrl }),
+          body: JSON.stringify({ youtube_url: youtubeUrl,  generate_linkedin_post: generateLinkedinPost }),
           headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken // Include the CSRF token in headers
