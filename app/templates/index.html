@@ -4,7 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="[FREE]Convert your youtube urls into blog post and linkedin post.
+  No login required. Our advanced AI converts your video to blog and linkedin post in seconds ">
   <title>Video To Blog and Linkedin Post AI Converter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4YjVjZjYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMi41IDE3YTI0LjEyIDI0LjEyIDAgMCAxIDAtMTAgMiAyIDAgMCAxIDEuNC0xLjQgNDkuNTYgNDkuNTYgMCAwIDEgMTYuMiAwQTIgMiAwIDAgMSAyMS41IDdhMjQuMTIgMjQuMTIgMCAwIDEgMCAxMCAyIDIgMCAwIDEtMS40IDEuNCA0OS41NSA0OS41NSAwIDAgMS0xNi4yIDBBMiAyIDAgMCAxIDIuNSAxNyIvPjxwYXRoIGQ9Im0xMCAxNSA1LTMtNS0zeiIvPjwvc3ZnPg==" type="image/svg+xml">
   <style>
     /* Basic styling */
     body {
@@ -25,22 +29,80 @@
     }
 
     header {
-      background: linear-gradient(to right, #8b5cf6, #6d28d9);
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
       color: white;
       text-align: center;
-      padding: 40px 20px;
+      padding: 60px 20px;
       margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      transform: rotate(30deg);
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon-wrapper {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      backdrop-filter: blur(5px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .icon-wrapper svg {
+      width: 40px;
+      height: 40px;
+      color: white;
     }
 
     header h1 {
       margin: 0 0 15px 0;
       font-size: 2.5rem;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     header p {
-      margin: 0;
+      margin: 0 auto;
       font-size: 1.2rem;
       opacity: 0.9;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 40px 20px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .icon-wrapper {
+        width: 60px;
+        height: 60px;
+      }
     }
 
     .logo-icons {
@@ -762,12 +824,50 @@
       vertical-align: middle;
     }
 
+    .input-with-icon {
+    position: relative;
+    }
+
+    .youtube-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #FF0000; /* YouTube red */
+        font-size: 20px;
+    }
+
+    #youtubeUrl {
+        padding-left: 40px; /* Make space for the icon */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .youtube-icon-outline {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: transparent; /* Makes the fill transparent */
+      font-size: 20px;
+      -webkit-text-stroke: 1.5px #FF0000; /* Red outline */
+      text-stroke: 1px #FF0000;
+    }
+
   </style>
 </head>
 <body>
   <header>
-    <h1>Video To Blog and Linkedin Post AI Converter</h1>
-    <p>Transform YouTube videos into polished blog posts and LinkedIn content in seconds</p>
+      <div class="header-content">
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/>
+            <path d="m10 15 5-3-5-3z"/>
+          </svg>
+        </div>
+        <h1>Video To Blog and LinkedIn Post AI Converter</h1>
+        <p>Transform YouTube videos into polished blog posts and LinkedIn content in seconds for FREE</p>
+      </div>
   </header>
 
   <div class="container">
@@ -775,7 +875,10 @@
       <div class="input-group">
           {% csrf_token %}
         <label for="youtubeUrl">YouTube Video URL</label>
-        <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+        <div class="input-with-icon">
+            <i class="fab fa-youtube youtube-icon youtube-icon-outline"></i>
+            <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
         <div class="input-group" style="margin-top: 10px;">
             <label class="toggle-switch">
                 <input type="checkbox" id="generateLinkedinCheckbox">
